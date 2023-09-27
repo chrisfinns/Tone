@@ -1,0 +1,18 @@
+{% extends 'beat/layout.html' %}
+{% load static %}
+
+{% block additional_scripts %}
+<script src="{% static 'beat/app.js' %}"></script>
+<script src="{% static 'beat/audiokeys.min.js' %}"></script>
+<script src="{% static 'beat/tone.js' %}"></script>
+{% endblock %}
+
+
+
+{% block body %}
+
+  <button id="play-btn">Play</button>
+  <div id="sequencer"></div>
+
+
+{% endblock %}

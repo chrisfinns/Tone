@@ -1,0 +1,17 @@
+.sequencer {
+    display: flex;
+	flex-direction: column;
+
+}
+
+.note {
+    height: 4em;
+    width: 4em;
+    margin: 2px;
+    border-radius: 5px;
+    border-width: 1px;
+    outline: none;
+    background-color: #ddd;
+    flex-direction: column;
+
+}
