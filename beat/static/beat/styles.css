@@ -10,8 +10,14 @@
     margin: 2px;
     border-radius: 5px;
     border-width: 1px;
-    outline: none;
     background-color: #ddd;
-    flex-direction: column;
+
+}
+
+.note-is-active {
+    background-color: green;
+}
+
+.note-is-not-active {
 
 }
