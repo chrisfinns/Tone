@@ -52,11 +52,10 @@ const makeSequencer = () => {
 
             // Add a event listener to each note
             button.addEventListener('click', () => {
-                console.log(Tone.context.state);
-                //Tone.start();
+                //console.log(Tone.context.state);
 
-                console.log(`${note.note}`)
-                synth.triggerAttackRelease(`${note.note}`, '8n');
+                //console.log(`${note.note}`)
+                //synth.triggerAttackRelease(`${note.note}`, '8n');
 
                 if (note.isActive === false) {
                     note.isActive = true;
@@ -81,6 +80,7 @@ const makeSequencer = () => {
 let index = 0;
 
 function repeat(time) {
+
     let step = index % 8;
     const rowLength = grid[1].length;
     //  console.log(step)
@@ -92,21 +92,24 @@ function repeat(time) {
     }); */
 
     for (let i = 0; i < grid.length; i++) {
+        let step = (index % 8);
         // console.log('Hello')
-        let note = notes[i];
+        let note = grid[i][step];
         //console.log(note)
         //console.log(note)
         //console.log(index)
+        if (note.isActive === true) {
+            synth.triggerAttackRelease(note.note, '8n', time)
+            console.log(note.note)
+        }
 
-        console.log(grid[5][5])
-    }
 
+    };
+    index++;
 
 }
 
 
-Tone.Transport.scheduleRepeat(repeat, '8n');
-Tone.Transport.start()
 
 /* const handleclicks = () => {
     // iterate through the  grid
@@ -122,16 +125,21 @@ Tone.Transport.start()
 window.addEventListener("DOMContentLoaded", () => {
     makeSequencer();
     //handleclicks();
-    Tone.Transport.start()
     const playBTN = document.getElementById("play-btn");
 
+    Tone.Transport.scheduleRepeat(repeat, '8n');
 
 
     playBTN.addEventListener('click', () => {
-        if (Tone.context.state !== "running") {
-            repeat();
+        Tone.start()
+            console.log(Tone.Transport.state);
+            // Start the Tone.Transport
+            if (Tone.Transport.state !== 'started') {
+                Tone.Transport.start();
+            } else {
+                Tone.Transport.stop();
+            }
             
-
-        }
+        //});
     });
 });
