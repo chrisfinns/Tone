@@ -3,7 +3,6 @@
 
 {% block additional_scripts %}
 <script src="{% static 'beat/app.js' %}"></script>
-<script src="{% static 'beat/audiokeys.min.js' %}"></script>
 <script src="{% static 'beat/tone.js' %}"></script>
 {% endblock %}
 
@@ -11,8 +10,11 @@
 
 {% block body %}
 
+
+
+  <div id="container"></div>
   <button id="play-btn">Play</button>
-  <div id="sequencer"></div>
+  <button id="save-btn">Save</button>
 
 
 {% endblock %}

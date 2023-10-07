@@ -77,4 +77,7 @@ def profile(request, user_id):
 
 
 def example(request):
+
+    
+
     return render(request, 'beat/example.html')

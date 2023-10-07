@@ -1,12 +1,22 @@
-// import * as Tone from 'tone'
+// SYNTH INIT
 console.log('Loaded app.js')
 const notes = ['B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4'];
+const drums = ['Kick', 'Snare','Hihat'];
 
-const synth = new Tone.Synth().toDestination();
+const synth = new Tone.MonoSynth({
+    oscillator: {
+        type: "square"
+    },
+    envelope: {
+        attack: 0.02
+    },
+
+}).toDestination();
 
 
 
 
+// MAKING THE STEPS IN THE SEQUENCER
 function makeGrid(notes){
 
   const rows = [];
@@ -25,16 +35,26 @@ function makeGrid(notes){
   return rows;
 };
 
-let grid = makeGrid(notes);
-//const makeSequencer =  () => {
+function save(sequence) {
     
-const makeSequencer = () => {
+}
 
-    const sequencer = document.getElementById("sequencer");
+let index = 0;
+let grid = makeGrid(notes);
+let drum_grid = makeGrid(drums);
+
+
+// MAKE THE SEQUENCER IN THE DOM
+function makeSequencer(grid) {
+
+    const container = document.getElementById("container");
+    const sequencer = document.createElement('div');
+    sequencer.className = 'sequencer'
+
+    container.appendChild(sequencer);
 
     grid.forEach((row, rowIndex) => {
         
-    //  console.log(`Value at index ${rowIndex}: ${row}`);
         
         const seqRow = document.createElement("div");
         seqRow.id = 'rowIndex';
@@ -48,14 +68,10 @@ const makeSequencer = () => {
             button.classList.add('note', 'note-is-not-active')
             // 
             sequencer.appendChild(button)
-            button.innerHTML = `${note.isActive} ${note.note}`;
+            button.innerHTML = `${note.isActive}`;
 
-            // Add a event listener to each note
             button.addEventListener('click', () => {
-                //console.log(Tone.context.state);
 
-                //console.log(`${note.note}`)
-                //synth.triggerAttackRelease(`${note.note}`, '8n');
 
                 if (note.isActive === false) {
                     note.isActive = true;
@@ -69,27 +85,21 @@ const makeSequencer = () => {
 
 
                 };          
-            button.innerHTML = `${note.isActive} ${note.note}`;
+            button.innerHTML = `${note.isActive}`;
+
+
+
 
             });
         });
 
     })
-
 }
-let index = 0;
 
 function repeat(time) {
 
     let step = index % 8;
     const rowLength = grid[1].length;
-    //  console.log(step)
-    //  console.log(grid[0]);
-/*     grid.forEach((row, rowIndex) => {
-        console.log(row[index])
-
-
-    }); */
 
     for (let i = 0; i < grid.length; i++) {
         let step = (index % 8);
@@ -100,14 +110,18 @@ function repeat(time) {
         //console.log(index)
         if (note.isActive === true) {
             synth.triggerAttackRelease(note.note, '8n', time)
-            console.log(note.note)
+            console.log(`Note: ${note.note} at row: ${i} on step ${step}`)
+            console.log
         }
 
 
     };
     index++;
-
 }
+
+
+
+
 
 
 
@@ -123,9 +137,12 @@ function repeat(time) {
 }; */
 
 window.addEventListener("DOMContentLoaded", () => {
-    makeSequencer();
-    //handleclicks();
+    makeSequencer(grid);
+    makeSequencer(drum_grid)
     const playBTN = document.getElementById("play-btn");
+    const saveBTN = document.getElementById("save-btn");
+
+
 
     Tone.Transport.scheduleRepeat(repeat, '8n');
 
@@ -139,7 +156,11 @@ window.addEventListener("DOMContentLoaded", () => {
             } else {
                 Tone.Transport.stop();
             }
-            
         //});
     });
+
+    saveBTN.addEventListener('click', () => {
+        save(grid);
+        save(drum_grid);
+    })
 });
