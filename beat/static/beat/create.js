@@ -1,3 +1,4 @@
+
 // SYNTH INIT
 console.log('Loaded app.js')
 const notes = ['B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4'];
@@ -5,12 +6,24 @@ const drums = ['Kick', 'Snare','Hihat'];
 
 const synth = new Tone.MonoSynth({
     oscillator: {
-        type: "square"
-    },
-    envelope: {
-        attack: 0.02
-    },
+        type: "triangle"
+    }
+ 
 
+}).toDestination();
+synth.volume.value = -6;
+
+
+
+const drumSamples = new Tone.Sampler({
+    urls: {
+        A1: kickUrl,
+        B1: snareUrl,
+        C1: hihatUrl
+    },
+    onload: () => {
+        sampler.triggerAttackRelease(["A1"]);
+    },
 }).toDestination();
 
 
@@ -32,20 +45,26 @@ function makeGrid(notes){
     rows.push(row);
     }
 
+
   return rows;
 };
 
-function save(sequence) {
-    
-}
+function save(notes, drums) {
+    beat = [notes, drums];
+    console.log(beat)
 
-let index = 0;
-let grid = makeGrid(notes);
-let drum_grid = makeGrid(drums);
+    fetch('/savebeat', {
+    method: 'POST',
+    body: JSON.stringify({
+        melody: beat[0],
+        drums: beat[1]
+    })
+});    
+}
 
 
 // MAKE THE SEQUENCER IN THE DOM
-function makeSequencer(grid) {
+function makeSequencer(array) {
 
     const container = document.getElementById("container");
     const sequencer = document.createElement('div');
@@ -53,7 +72,7 @@ function makeSequencer(grid) {
 
     container.appendChild(sequencer);
 
-    grid.forEach((row, rowIndex) => {
+    array.forEach((row, rowIndex) => {
         
         
         const seqRow = document.createElement("div");
@@ -68,7 +87,7 @@ function makeSequencer(grid) {
             button.classList.add('note', 'note-is-not-active')
             // 
             sequencer.appendChild(button)
-            button.innerHTML = `${note.isActive}`;
+            button.innerHTML = `${note.note}`;
 
             button.addEventListener('click', () => {
 
@@ -85,7 +104,7 @@ function makeSequencer(grid) {
 
 
                 };          
-            button.innerHTML = `${note.isActive}`;
+            button.innerHTML = `${note.note}`;
 
 
 
@@ -96,6 +115,10 @@ function makeSequencer(grid) {
     })
 }
 
+let index = 0;
+let grid = makeGrid(notes);
+let drumGrid = makeGrid(drums);
+
 function repeat(time) {
 
     let step = index % 8;
@@ -103,16 +126,38 @@ function repeat(time) {
 
     for (let i = 0; i < grid.length; i++) {
         let step = (index % 8);
-        // console.log('Hello')
         let note = grid[i][step];
-        //console.log(note)
-        //console.log(note)
-        //console.log(index)
-        if (note.isActive === true) {
-            synth.triggerAttackRelease(note.note, '8n', time)
-            console.log(`Note: ${note.note} at row: ${i} on step ${step}`)
-            console.log
+        console.log(i)
+
+        if ( i < drumGrid.length) {
+            let drum = drumGrid[i][step]; // ** This array only have 3 rows so 'i' will return an error 
+        
+            if (drum.isActive === true) {
+                // Trigger the corresponding drum sound based on the drum type
+                switch (drum.note) {
+                    case 'Kick':
+                        drumSamples.triggerAttackRelease('A1', );
+                        break;
+                    case 'Snare':
+                        drumSamples.triggerAttackRelease('B1');
+                        break;
+                    case 'Hihat':
+                        drumSamples.triggerAttackRelease('C1');
+                        break;
+                    // Add more cases for other drum types if needed
+                }
+            }
         }
+
+
+
+        if (note.isActive === true) {
+
+            synth.triggerAttackRelease(note.note, '8n', time);
+        }
+
+
+        
 
 
     };
@@ -136,19 +181,55 @@ function repeat(time) {
     });
 }; */
 
+// For the home page
+const homePage = {
+    init: function () {
+        //console.log(${melody_json})
+        
+    },
+    // Other functions specific to the home page
+};
+
+console.log('Current pathname:', window.location.pathname);
+
+
+if (window.location.pathname === '/') {
+    console.log('Initializing home page code');
+    homePage.init();
+}
+else if (window.location.pathname === '/beat/1') {
+    
+    console.log("This is the beat/1 page")
+
+    fetch('/beat/1')
+        .then(response => response.json())
+        .then(data => {
+            
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        })
+}  
+
 window.addEventListener("DOMContentLoaded", () => {
+
+
     makeSequencer(grid);
-    makeSequencer(drum_grid)
+    makeSequencer(drumGrid)
     const playBTN = document.getElementById("play-btn");
     const saveBTN = document.getElementById("save-btn");
 
-
-
     Tone.Transport.scheduleRepeat(repeat, '8n');
-
 
     playBTN.addEventListener('click', () => {
         Tone.start()
+        //drumSamples.triggerAttackRelease('A1', 0.5)
+
+        //drums.triggerAttackRelease('B1', 0.5)
+
+        //snare.triggerAttackRelease('B1', 0.5)
+
             console.log(Tone.Transport.state);
             // Start the Tone.Transport
             if (Tone.Transport.state !== 'started') {
@@ -160,7 +241,10 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     saveBTN.addEventListener('click', () => {
-        save(grid);
-        save(drum_grid);
+        save(grid, drumGrid)
+    
+
     })
+
+    
 });

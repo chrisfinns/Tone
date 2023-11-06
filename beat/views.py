@@ -1,11 +1,14 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
-
-from . models import User
+from . models import User, Beat
 
 
 # Create your views here.
@@ -64,10 +67,6 @@ def register(request):
 
 
 
-def index(request):
-    return render(request, 'beat/index.html')
-
-
 def profile(request, user_id):
 
     return render(request, 'beat/profile.html')
@@ -78,6 +77,43 @@ def profile(request, user_id):
 
 def example(request):
 
-    
+
 
     return render(request, 'beat/example.html')
+
+@csrf_exempt
+@login_required
+def savebeat(request):
+    user = request.user
+
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        melody = data.get("melody")
+        drums = data.get("drums")
+        
+        sequence = Beat(creator=user, melody=melody, drums=drums)
+        sequence.save()
+
+    return HttpResponse(status=204)
+
+def index(request):
+    
+    beats = Beat.objects.all()
+
+    melody_json = [json.dumps(beat.melody, cls=DjangoJSONEncoder) for beat in beats]
+
+
+    return render(request, 'beat/index.html', {
+        "melody_json": melody_json,
+
+    })
+
+def beat(request, id):
+    
+    beat = Beat.objects.get(pk=id)
+
+    print(beat.melody)
+    return render(request, 'beat/beat.html', {
+        'response': beat.melody
+    } )
+    

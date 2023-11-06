@@ -9,6 +9,8 @@ urlpatterns = [
     path('register', views.register, name="register"),
     path('example', views.example, name="example"),
     path('profile/<str:user_id>', views.profile, name="profile"), 
-    
+    path('savebeat', views.savebeat, name='savebeat'),
+    path('beat/<int:id>', views.beat, name='beat')
+
 
 ]

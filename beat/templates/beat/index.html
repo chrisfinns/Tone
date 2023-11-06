@@ -1,7 +1,33 @@
-{% extends "beat/layout.html" %}
+{% extends 'beat/layout.html' %}
+{% load static %}
+
+{% block additional_scripts %}
+<script type ='text/javascript'>
+    var melodyJson = JSON.parse('{{ melody_json|escapejs }}');
+</script>
+
+<script src="{% static 'beat/create.js' %}"></script>
+
+
+
+{% endblock %}
+
 
 {% block body %}
 <h1>Tone</h1>
+
+
+<!-- {% for row in melody_json %}
+    {% for note in row%}
+        {{ note }}
+    {% endfor %}
+{% endfor %} -->
+
+<div id="container"></div>
+
+<div id="container"></div>
+<button id="play-btn">Play</button>
+<button id="save-btn">Save</button>
 
 
 {% endblock %}

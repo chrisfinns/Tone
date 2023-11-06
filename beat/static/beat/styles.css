@@ -5,12 +5,12 @@
 }
 
 .note {
-    height: 2em;
-    width: 4em;
-    margin: 2px;
+    height: 3em;
+    width: 3em;
+    margin: 0px;
     border-radius: 5px;
     border-width: 1px;
-    background-color: #ddd;
+    background-color: #fff;
     transition: background-color 0.3s;
     
     &:hover {
@@ -23,6 +23,3 @@
     background-color: #005da5;
 }
 
-.note-is-not-active {
-
-}
